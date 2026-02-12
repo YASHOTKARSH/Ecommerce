@@ -237,6 +237,7 @@ curl -X GET http://localhost:5000/api/auth/admin-only \
 - Helmet for security headers
 - Input validation with Joi
 - CORS protection
+- CSRF protection with origin verification and SameSite cookies
 - Centralized error handling (no stack traces in production)
 
 ## Error Handling

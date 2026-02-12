@@ -6,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const rateLimit = require('express-rate-limit');
 const connectDB = require('./config/db');
 const errorHandler = require('./middleware/error');
+const csrfProtection = require('./middleware/csrf');
 
 // Connect to database
 connectDB();
@@ -35,6 +36,9 @@ app.use(express.urlencoded({ extended: true }));
 
 // Cookie parser
 app.use(cookieParser());
+
+// CSRF protection for cookie-based auth
+app.use(csrfProtection);
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
