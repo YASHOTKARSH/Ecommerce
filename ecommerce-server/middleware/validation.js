@@ -7,7 +7,7 @@ const validate = (schema) => {
     
     if (error) {
       const message = error.details.map((detail) => detail.message).join(', ');
-      throw new ApiError(400, message);
+      return next(new ApiError(400, message));
     }
     
     next();
