@@ -67,7 +67,8 @@ const restoreStock = async (items) => {
       
       if (!product) {
         // If product doesn't exist, log but don't fail the transaction
-        console.warn(`Product ${item.productId} not found during stock restoration`);
+        // TODO: Integrate with proper logging/monitoring service in production
+        console.warn(`[STOCK WARNING] Product ${item.productId} not found during stock restoration`);
         continue;
       }
 

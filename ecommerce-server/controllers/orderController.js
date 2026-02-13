@@ -45,7 +45,7 @@ const createRazorpayOrder = asyncHandler(async (req, res, next) => {
 
   // Create Razorpay order
   const options = {
-    amount: Math.round(totalAmount * 100), // Amount in paise
+    amount: Math.round(totalAmount * 100), // Convert rupees to paise (smallest currency unit for INR)
     currency: 'INR',
     receipt: `order_${userId}_${Date.now()}`,
   };
@@ -229,6 +229,7 @@ const cancelOrder = asyncHandler(async (req, res, next) => {
   }
 
   // Restore stock
+  let stockRestoreWarning = null;
   try {
     await restoreStock(order.items.map(item => ({
       productId: item.productId,
@@ -236,18 +237,24 @@ const cancelOrder = asyncHandler(async (req, res, next) => {
     })));
   } catch (error) {
     console.error('Error restoring stock:', error);
-    // Don't fail the cancellation if stock restoration fails
+    stockRestoreWarning = `Order cancelled successfully, but stock restoration encountered an error. Please contact support with order ID ${orderId} to verify inventory.`;
   }
 
   // Update order status
   order.orderStatus = 'cancelled';
   await order.save();
 
-  res.status(200).json({
+  const response = {
     success: true,
     message: 'Order cancelled successfully',
     order,
-  });
+  };
+
+  if (stockRestoreWarning) {
+    response.warning = stockRestoreWarning;
+  }
+
+  res.status(200).json(response);
 });
 
 module.exports = {
