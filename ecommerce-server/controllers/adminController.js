@@ -6,6 +6,10 @@ const asyncHandler = require('../utils/asyncHandler');
 const { calculateRevenue, groupByDate, getDateRange } = require('../utils/analyticsHelper');
 const cloudinary = require('../config/cloudinary');
 
+// Constants
+const MONGODB_OBJECTID_REGEX = /^[0-9a-fA-F]{24}$/;
+const CLOUDINARY_PUBLIC_ID_REGEX = /\/v\d+\/(.+)\.\w+$/;
+
 // ==================== USER MANAGEMENT ====================
 
 // @desc    Get all users with pagination and filters
@@ -178,7 +182,7 @@ const getOrders = asyncHandler(async (req, res) => {
     userIds = users.map((u) => u._id);
     
     // Try to search by order ID as well
-    if (search.match(/^[0-9a-fA-F]{24}$/)) {
+    if (MONGODB_OBJECTID_REGEX.test(search)) {
       query.$or = [{ _id: search }, { user: { $in: userIds } }];
     } else if (userIds.length > 0) {
       query.user = { $in: userIds };
@@ -313,12 +317,16 @@ const getProductStats = asyncHandler(async (req, res) => {
   const lowStockProducts = await Product.countDocuments({ stock: { $lt: 10, $gt: 0 } });
   const outOfStockProducts = await Product.countDocuments({ stock: 0 });
 
-  // Calculate total inventory value
-  const products = await Product.find();
-  const totalInventoryValue = products.reduce(
-    (sum, product) => sum + product.price * product.stock,
-    0
-  );
+  // Calculate total inventory value using aggregation
+  const inventoryValue = await Product.aggregate([
+    {
+      $group: {
+        _id: null,
+        totalValue: { $sum: { $multiply: ['$price', '$stock'] } },
+      },
+    },
+  ]);
+  const totalInventoryValue = inventoryValue.length > 0 ? inventoryValue[0].totalValue : 0;
 
   // Products by category
   const productsByCategory = await Product.aggregate([
@@ -407,7 +415,7 @@ const bulkDeleteProducts = asyncHandler(async (req, res) => {
       for (const imageUrl of product.images) {
         try {
           // Extract public_id from Cloudinary URL
-          const matches = imageUrl.match(/\/v\d+\/(.+)\.\w+$/);
+          const matches = imageUrl.match(CLOUDINARY_PUBLIC_ID_REGEX);
           if (matches && matches[1]) {
             await cloudinary.uploader.destroy(matches[1]);
           }

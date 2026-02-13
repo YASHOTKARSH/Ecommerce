@@ -1,4 +1,30 @@
 /**
+ * Escape CSV field to prevent CSV injection
+ * @param {String} field - Field value to escape
+ * @returns {String} - Escaped field value
+ */
+const escapeCSVField = (field) => {
+  if (field === null || field === undefined) {
+    return '';
+  }
+  
+  const stringField = String(field);
+  
+  // Check if field contains special characters that need escaping
+  if (stringField.includes(',') || stringField.includes('"') || stringField.includes('\n') || stringField.includes('\r')) {
+    // Wrap in quotes and escape internal quotes by doubling them
+    return `"${stringField.replace(/"/g, '""')}"`;
+  }
+  
+  // Prevent formula injection by prefixing with single quote if it starts with =, +, -, or @
+  if (stringField.match(/^[=+\-@]/)) {
+    return `'${stringField}`;
+  }
+  
+  return stringField;
+};
+
+/**
  * Export orders to CSV format
  * @param {Array} orders - Array of order objects
  * @returns {String} - CSV formatted string
@@ -29,15 +55,15 @@ const exportOrdersToCSV = (orders) => {
     const createdAt = new Date(order.createdAt).toLocaleString();
 
     return [
-      order._id,
-      userEmail,
-      userName,
-      order.totalAmount,
-      order.orderStatus,
-      order.paymentStatus,
-      order.paymentMethod,
-      createdAt,
-      itemsCount,
+      escapeCSVField(order._id),
+      escapeCSVField(userEmail),
+      escapeCSVField(userName),
+      escapeCSVField(order.totalAmount),
+      escapeCSVField(order.orderStatus),
+      escapeCSVField(order.paymentStatus),
+      escapeCSVField(order.paymentMethod),
+      escapeCSVField(createdAt),
+      escapeCSVField(itemsCount),
     ].join(',');
   });
 
@@ -72,13 +98,13 @@ const exportUsersToCSV = (users) => {
     const createdAt = new Date(user.createdAt).toLocaleString();
 
     return [
-      user._id,
-      user.name,
-      user.email,
-      user.role,
-      user.isBanned ? 'Yes' : 'No',
-      lastLogin,
-      createdAt,
+      escapeCSVField(user._id),
+      escapeCSVField(user.name),
+      escapeCSVField(user.email),
+      escapeCSVField(user.role),
+      escapeCSVField(user.isBanned ? 'Yes' : 'No'),
+      escapeCSVField(lastLogin),
+      escapeCSVField(createdAt),
     ].join(',');
   });
 
