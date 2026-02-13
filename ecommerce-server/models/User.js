@@ -32,6 +32,13 @@ const userSchema = new mongoose.Schema({
     zipCode: { type: String, default: '' },
     country: { type: String, default: '' },
   },
+  isBanned: {
+    type: Boolean,
+    default: false,
+  },
+  lastLogin: {
+    type: Date,
+  },
   createdAt: {
     type: Date,
     default: Date.now,
