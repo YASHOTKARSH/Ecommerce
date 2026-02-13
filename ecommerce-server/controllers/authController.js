@@ -70,11 +70,20 @@ const login = asyncHandler(async (req, res, next) => {
     throw new ApiError(401, 'Invalid credentials');
   }
 
+  // Check if user is banned
+  if (user.isBanned) {
+    throw new ApiError(403, 'Your account has been banned. Please contact support.');
+  }
+
   // Check if password matches
   const isMatch = await user.comparePassword(password);
   if (!isMatch) {
     throw new ApiError(401, 'Invalid credentials');
   }
+
+  // Update lastLogin
+  user.lastLogin = new Date();
+  await user.save({ validateBeforeSave: false });
 
   sendTokenResponse(user, 200, res);
 });
