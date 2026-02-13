@@ -138,6 +138,7 @@ const getCart = asyncHandler(async (req, res) => {
   let cart = await Cart.findOne({ userId }).populate({
     path: 'items.productId',
     select: 'title price discount images stock',
+    options: { virtuals: true },
   });
 
   if (!cart) {

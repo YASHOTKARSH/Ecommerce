@@ -67,7 +67,7 @@ const searchProductSchema = Joi.object({
   sort: Joi.string().valid('price', '-price', 'createdAt', '-createdAt', 'ratings', '-ratings').default('-createdAt'),
 }).custom((value, helpers) => {
   if (value.minPrice && value.maxPrice && value.minPrice > value.maxPrice) {
-    return helpers.error('any.invalid', { message: 'minPrice cannot be greater than maxPrice' });
+    return helpers.message('minPrice cannot be greater than maxPrice');
   }
   return value;
 });

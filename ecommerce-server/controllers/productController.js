@@ -126,15 +126,16 @@ const getAllProducts = asyncHandler(async (req, res) => {
   // Get total count for pagination metadata
   const total = await Product.countDocuments(query);
 
-  // Parse sort parameter
-  let sortOption = {};
-  if (sort === 'price') sortOption.price = 1;
-  else if (sort === '-price') sortOption.price = -1;
-  else if (sort === 'createdAt') sortOption.createdAt = 1;
-  else if (sort === '-createdAt') sortOption.createdAt = -1;
-  else if (sort === 'ratings') sortOption['ratings.average'] = 1;
-  else if (sort === '-ratings') sortOption['ratings.average'] = -1;
-  else sortOption.createdAt = -1;
+  // Parse sort parameter - mapping for cleaner code
+  const sortMap = {
+    'price': { price: 1 },
+    '-price': { price: -1 },
+    'createdAt': { createdAt: 1 },
+    '-createdAt': { createdAt: -1 },
+    'ratings': { 'ratings.average': 1 },
+    '-ratings': { 'ratings.average': -1 },
+  };
+  const sortOption = sortMap[sort] || { createdAt: -1 };
 
   // Get products
   const products = await Product.find(query)

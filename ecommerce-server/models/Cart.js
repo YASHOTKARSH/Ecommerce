@@ -45,7 +45,8 @@ cartSchema.methods.calculateTotal = async function () {
   for (const item of this.items) {
     if (item.productId) {
       const product = item.productId;
-      const finalPrice = product.price - (product.price * product.discount) / 100;
+      // Use the virtual finalPrice field from Product model
+      const finalPrice = product.finalPrice;
       total += finalPrice * item.quantity;
     }
   }
