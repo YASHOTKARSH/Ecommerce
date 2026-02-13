@@ -14,6 +14,10 @@ const { reduceStock, restoreStock } = require('../utils/stockManager');
  * @access Private
  */
 const createRazorpayOrder = asyncHandler(async (req, res) => {
+  if (!razorpay) {
+    throw new ApiError(500, 'Razorpay is not configured. Please set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET environment variables');
+  }
+
   const userId = req.user.id;
 
   // Get user's cart
