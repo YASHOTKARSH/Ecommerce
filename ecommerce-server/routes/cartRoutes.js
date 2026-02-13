@@ -26,10 +26,10 @@ router.post('/', validate(addToCartSchema), addToCart);
 // Update cart item quantity
 router.put('/', validate(updateCartSchema), updateCartItem);
 
+// Clear entire cart (must be before /:productId to avoid conflicts)
+router.delete('/clear', clearCart);
+
 // Remove item from cart
 router.delete('/:productId', removeFromCart);
-
-// Clear entire cart
-router.delete('/', clearCart);
 
 module.exports = router;
