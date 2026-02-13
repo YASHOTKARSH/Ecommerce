@@ -42,6 +42,7 @@ app.use(csrfProtection);
 
 // Routes
 app.use('/api/auth', require('./routes/authRoutes'));
+app.use('/api/orders', require('./routes/orderRoutes'));
 
 // Health check route
 app.get('/api/health', (req, res) => {
