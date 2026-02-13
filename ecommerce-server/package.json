@@ -5,7 +5,11 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "lint": "eslint . --ext .js",
+    "lint:fix": "eslint . --ext .js --fix",
+    "format": "prettier --write \"**/*.{js,json,md}\"",
+    "format:check": "prettier --check \"**/*.{js,json,md}\""
   },
   "keywords": [
     "ecommerce",
@@ -30,10 +34,16 @@
     "mongoose": "^9.2.1",
     "multer": "^2.0.2",
     "razorpay": "^2.9.2",
+    "winston": "^3.19.0",
+    "winston-daily-rotate-file": "^5.0.0",
     "xss-clean": "^0.1.4"
   },
   "devDependencies": {
     "axios": "^1.13.5",
-    "mongodb-memory-server": "^11.0.1"
+    "eslint": "^10.0.0",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.5",
+    "mongodb-memory-server": "^11.0.1",
+    "prettier": "^3.8.1"
   }
 }
