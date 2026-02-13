@@ -8,10 +8,15 @@ on:
     branches:
       - main
 
+permissions:
+  contents: read
+
 jobs:
   # Lint and test backend
   backend-lint-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: ./ecommerce-server
@@ -41,6 +46,8 @@ jobs:
   # Lint and test frontend
   frontend-lint-test:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     defaults:
       run:
         working-directory: ./ecommerce-client
@@ -73,6 +80,8 @@ jobs:
   # Security audit
   security-audit:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
@@ -96,6 +105,8 @@ jobs:
   build-docker:
     needs: [backend-lint-test, frontend-lint-test, security-audit]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:
@@ -137,6 +148,8 @@ jobs:
   deploy:
     needs: [build-docker]
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
 
     steps:

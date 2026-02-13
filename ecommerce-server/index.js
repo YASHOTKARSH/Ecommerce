@@ -59,6 +59,11 @@ app.use(express.urlencoded({ extended: true, limit: '10mb' }));
 // Cookie parser
 app.use(cookieParser());
 
+// CSRF protection for cookie-based auth
+// Note: Custom CSRF middleware checks origin/referer headers for state-changing requests
+// This provides protection against CSRF attacks while allowing API flexibility
+app.use(csrfProtection);
+
 // Sanitization middleware
 app.use(mongoSanitize);
 app.use(xssClean);

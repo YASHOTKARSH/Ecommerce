@@ -18,7 +18,9 @@ const errorHandler = (err, req, res, next) => {
 
   // Mongoose duplicate key
   if (err.code === 11000) {
-    const field = Object.keys(err.keyPattern)[0];
+    const field = err.keyPattern && Object.keys(err.keyPattern).length > 0
+      ? Object.keys(err.keyPattern)[0]
+      : 'field';
     const message = `${field.charAt(0).toUpperCase() + field.slice(1)} already exists`;
     error = new ApiError(409, message);
   }
