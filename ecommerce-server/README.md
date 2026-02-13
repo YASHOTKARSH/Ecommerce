@@ -8,6 +8,10 @@ Production-ready backend for E-commerce platform built with Node.js, Express, an
 - ✅ JWT-based authorization
 - ✅ Role-based access control (Customer/Admin)
 - ✅ Password hashing with bcrypt
+- ✅ Order placement with Razorpay integration
+- ✅ Payment signature verification
+- ✅ Stock management with MongoDB transactions
+- ✅ Order tracking and history
 - ✅ Input validation with Joi
 - ✅ Centralized error handling
 - ✅ Security headers with Helmet
@@ -20,26 +24,39 @@ Production-ready backend for E-commerce platform built with Node.js, Express, an
 ```
 ecommerce-server/
 ├── config/
-│   ├── db.js              # MongoDB connection
-│   └── cloudinary.js       # Cloudinary configuration
+│   ├── db.js                    # MongoDB connection
+│   ├── cloudinary.js            # Cloudinary configuration
+│   └── razorpay.js              # Razorpay configuration
 ├── controllers/
-│   └── authController.js   # Authentication logic
+│   ├── authController.js        # Authentication logic
+│   └── orderController.js       # Order management logic
 ├── models/
-│   └── User.js            # User schema
+│   ├── User.js                  # User schema
+│   ├── Product.js               # Product schema
+│   ├── Cart.js                  # Cart schema
+│   └── Order.js                 # Order schema
 ├── routes/
-│   └── authRoutes.js      # Auth endpoints
+│   ├── authRoutes.js            # Auth endpoints
+│   └── orderRoutes.js           # Order endpoints
 ├── middleware/
-│   ├── auth.js            # JWT verification
-│   ├── roleAuth.js        # Role-based access control
-│   ├── error.js           # Error handler
-│   └── validation.js      # Joi validation
+│   ├── auth.js                  # JWT verification
+│   ├── roleAuth.js              # Role-based access control
+│   ├── error.js                 # Error handler
+│   ├── csrf.js                  # CSRF protection
+│   └── validation.js            # Joi validation
 ├── utils/
-│   ├── ApiError.js        # Custom error class
-│   └── asyncHandler.js    # Async error wrapper
-├── .env.example           # Environment variables template
-├── .gitignore            # Git ignore rules
-├── package.json          # Dependencies
-└── index.js              # Server entry point
+│   ├── ApiError.js              # Custom error class
+│   ├── asyncHandler.js          # Async error wrapper
+│   └── stockManager.js          # Stock management with transactions
+├── validations/
+│   └── orderValidation.js       # Order validation schemas
+├── .env.example                 # Environment variables template
+├── .gitignore                   # Git ignore rules
+├── package.json                 # Dependencies
+├── index.js                     # Server entry point
+├── ORDER_API.md                 # Order API documentation
+├── ORDER_IMPLEMENTATION.md      # Implementation summary
+└── SECURITY.md                  # Security documentation
 ```
 
 ## Setup
@@ -179,6 +196,19 @@ Authorization: Bearer jwt-token-here
 GET /api/health
 ```
 
+### Order Management
+
+For complete order API documentation, see [ORDER_API.md](ORDER_API.md).
+
+#### Quick Order Endpoints Overview
+- **POST** `/api/orders/create-razorpay-order` - Create Razorpay order
+- **POST** `/api/orders/verify-payment` - Verify payment & create order
+- **GET** `/api/orders/my-orders` - Get user's orders
+- **GET** `/api/orders/:id` - Get order by ID
+- **PUT** `/api/orders/:id/cancel` - Cancel order
+
+All order endpoints require authentication.
+
 ## Testing with cURL
 
 ### 1. Register a new user:
@@ -233,12 +263,18 @@ curl -X GET http://localhost:5000/api/auth/admin-only \
 - Password hashing with bcrypt (10 rounds)
 - JWT tokens with 30-day expiration
 - httpOnly cookies for token storage
+- Razorpay payment signature verification (HMAC-SHA256)
+- MongoDB transactions for atomic operations
+- Stock management with race condition prevention
+- Order authorization (users access only their orders)
 - Rate limiting (100 requests per 15 minutes)
 - Helmet for security headers
 - Input validation with Joi
 - CORS protection
 - CSRF protection with origin verification and SameSite cookies
 - Centralized error handling (no stack traces in production)
+
+For detailed security information, see [SECURITY.md](SECURITY.md).
 
 ## Error Handling
 
@@ -291,22 +327,43 @@ npm run dev
 
 1. Set `NODE_ENV=production` in environment
 2. Use strong JWT_SECRET
-3. Enable HTTPS
-4. Use production MongoDB connection
-5. Configure proper CORS origins
-6. Set up proper logging
-7. Use process manager (PM2)
+3. Set RAZORPAY_KEY_ID and RAZORPAY_KEY_SECRET from Razorpay dashboard
+4. Enable HTTPS
+5. Use production MongoDB connection with replica set (for transactions)
+6. Configure proper CORS origins
+7. Set up proper logging
+8. Use process manager (PM2)
+
+## Implemented Features
+
+✅ **Milestone 1**: Backend Core Setup
+- User authentication and authorization
+- JWT-based session management
+- Role-based access control
+- Security middleware and CSRF protection
+
+✅ **Milestone 3**: Order Placement & Payment
+- Razorpay payment integration
+- Order creation and tracking
+- Stock management with transactions
+- Payment signature verification
 
 ## Next Steps
 
 This backend is ready for:
-- Product management module
-- Cart and order management
-- Payment integration (Razorpay)
-- Image upload (Cloudinary)
-- Admin dashboard
-- Customer reviews
-- Search and filtering
+- ⏳ Product management API (CRUD endpoints)
+- ⏳ Cart management API (CRUD endpoints)
+- ⏳ Admin dashboard (Milestone 4)
+- ⏳ Customer reviews
+- ⏳ Search and filtering
+- ⏳ Image upload (Cloudinary)
+
+## Documentation
+
+- [ORDER_API.md](ORDER_API.md) - Complete order API documentation
+- [ORDER_IMPLEMENTATION.md](ORDER_IMPLEMENTATION.md) - Implementation details
+- [SECURITY.md](SECURITY.md) - Security measures and analysis
+- [TESTING.md](TESTING.md) - Testing guide
 
 ## License
 
