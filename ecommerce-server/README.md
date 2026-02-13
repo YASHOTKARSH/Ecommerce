@@ -4,42 +4,91 @@ Production-ready backend for E-commerce platform built with Node.js, Express, an
 
 ## Features
 
-- ✅ User authentication (Register/Login)
-- ✅ JWT-based authorization
+### Security
+- ✅ JWT access (15min) and refresh (7d) tokens with rotation
+- ✅ Password strength validation (8+ chars, uppercase, lowercase, number, special char)
+- ✅ Account lockout after 5 failed login attempts (2 hours)
+- ✅ Password reset flow with email verification
 - ✅ Role-based access control (Customer/Admin)
-- ✅ Password hashing with bcrypt
-- ✅ Input validation with Joi
-- ✅ Centralized error handling
-- ✅ Security headers with Helmet
-- ✅ Rate limiting
-- ✅ CORS support
-- ✅ Cloudinary integration ready
+- ✅ Input sanitization (XSS, NoSQL injection prevention)
+- ✅ CSRF protection with origin verification
+- ✅ Tiered rate limiting (auth: 5/15min, API: 100/15min, public: 200/15min)
+- ✅ Secure headers with Helmet.js (CSP, HSTS, X-Frame-Options, etc.)
+- ✅ Audit logging for critical actions
+- ✅ Request validation and suspicious request detection
+
+### Features
+- ✅ RESTful API with comprehensive error handling
+- ✅ MongoDB with optimized indexes
+- ✅ Winston logger with daily rotation
+- ✅ Health check endpoints (basic + detailed)
+- ✅ Gzip compression
+- ✅ Environment-based configuration with validation
+- ✅ Product management with search and filters
+- ✅ Shopping cart functionality
+- ✅ Order management with Razorpay integration
+- ✅ Image upload with Cloudinary
+- ✅ Admin dashboard with audit logs
 
 ## Project Structure
 
 ```
 ecommerce-server/
 ├── config/
-│   ├── db.js              # MongoDB connection
-│   └── cloudinary.js       # Cloudinary configuration
+│   ├── db.js                 # MongoDB connection
+│   ├── env.js                # Environment validation
+│   ├── logger.js             # Winston configuration
+│   ├── cloudinary.js         # Cloudinary configuration
+│   └── razorpay.js           # Razorpay configuration
 ├── controllers/
-│   └── authController.js   # Authentication logic
+│   ├── authController.js     # Authentication & authorization
+│   ├── productController.js  # Product management
+│   ├── cartController.js     # Shopping cart
+│   ├── orderController.js    # Order management
+│   └── adminController.js    # Admin operations
 ├── models/
-│   └── User.js            # User schema
+│   ├── User.js               # User schema with security features
+│   ├── Product.js            # Product schema with indexes
+│   ├── Cart.js               # Cart schema
+│   ├── Order.js              # Order schema with indexes
+│   └── AuditLog.js           # Audit log schema
 ├── routes/
-│   └── authRoutes.js      # Auth endpoints
+│   ├── authRoutes.js         # Auth endpoints
+│   ├── productRoutes.js      # Product endpoints
+│   ├── cartRoutes.js         # Cart endpoints
+│   ├── orderRoutes.js        # Order endpoints
+│   └── adminRoutes.js        # Admin endpoints
 ├── middleware/
-│   ├── auth.js            # JWT verification
-│   ├── roleAuth.js        # Role-based access control
-│   ├── error.js           # Error handler
-│   └── validation.js      # Joi validation
+│   ├── auth.js               # JWT verification
+│   ├── roleAuth.js           # Role-based access control
+│   ├── error.js              # Error handler
+│   ├── validation.js         # Joi validation
+│   ├── rateLimiter.js        # Tiered rate limiting
+│   ├── sanitize.js           # Input sanitization
+│   ├── requestValidator.js   # Request validation
+│   ├── auditLogger.js        # Audit logging
+│   ├── csrf.js               # CSRF protection
+│   └── upload.js             # File upload handling
 ├── utils/
-│   ├── ApiError.js        # Custom error class
-│   └── asyncHandler.js    # Async error wrapper
-├── .env.example           # Environment variables template
-├── .gitignore            # Git ignore rules
-├── package.json          # Dependencies
-└── index.js              # Server entry point
+│   ├── ApiError.js           # Custom error class
+│   ├── asyncHandler.js       # Async error wrapper
+│   ├── errors.js             # Custom error classes
+│   ├── passwordValidator.js  # Password strength validation
+│   ├── stockManager.js       # Stock management
+│   └── stockValidator.js     # Stock validation
+├── validations/              # Joi validation schemas
+├── logs/                     # Application logs (auto-created)
+├── .env.example              # Environment template
+├── .env.development          # Development config
+├── .env.production           # Production config
+├── .env.test                 # Test config
+├── .eslintrc.json            # ESLint configuration
+├── .prettierrc.json          # Prettier configuration
+├── Dockerfile                # Docker image definition
+├── ecosystem.config.js       # PM2 configuration
+├── .gitignore                # Git ignore rules
+├── package.json              # Dependencies and scripts
+└── index.js                  # Server entry point
 ```
 
 ## Setup
